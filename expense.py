@@ -11,10 +11,10 @@ class Expense:
         self.description = description
 
     def set_cost(self, cost:Decimal):
-        self.cost = self.cost
+        self.cost = cost
 
     def set_category(self, category:str):
-        self.category = category
+        self.category = category.lower().strip()
 
     def get_cost(self):
         return self.cost

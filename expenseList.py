@@ -32,7 +32,7 @@ class ExpenseList:
         for expense in self.expenses:
             if expense.get_id() == expense_id:
                 return expense
-        return False
+        return None
 
     def save_expenses(self):
         data = []

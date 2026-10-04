@@ -56,41 +56,28 @@ class Ui:
             return
 
         edited_expense = self.expense_list.get_expense_by_id(given_id)
-        if edited_expense == False:
+        if edited_expense is None:
             print("Error: no expense found with that ID")
             print()
             return 
 
-        print("Please type the expense in the format 'description/cost/category")
-        response = input("Input: ")
-        splitResponse = response.split("/")
+        details = self.get_expense_details()
 
-        if len(splitResponse) != 3:
-            print("Error: please enter the expense in the format 'description/cost/category")
-            print() 
+        if details is None:
             return
-        
-        description = splitResponse[0]
-
-        try:
-            cost = Decimal(splitResponse[1])
-        except InvalidOperation:
-            print("Please enter a valid cost")
-            print()
-            return
-        
-        category = splitResponse[2] 
+        description, cost, category = details
 
         edited_expense.set_description(description)
         edited_expense.set_cost(cost)
         edited_expense.set_category(category)
 
+        self.expense_list.save_expenses()
+
         print("Expense edited")
         print()
 
 
-    def add(self):
-        print()
+    def get_expense_details(self):
         print("Please type the expense in the format 'description/cost/category")
         response = input("Input: ")
         splitResponse = response.split("/")
@@ -98,18 +85,40 @@ class Ui:
         if len(splitResponse) != 3:
             print("Error: please enter the expense in the format 'description/cost/category")
             print() 
-            return
+            return None
         
-        description = splitResponse[0]
+        description = splitResponse[0].strip()
+        if description == "":
+            print("Description cannot be empty")
+            return None
 
         try:
             cost = Decimal(splitResponse[1])
         except InvalidOperation:
             print("Please enter a valid cost")
             print()
-            return
+            return None
+
+        if cost < 0:
+            print("Please enter a valid cost")
+            print()
+            return None
         
-        category = splitResponse[2]
+        category = splitResponse[2].strip()
+        if category == "":
+            print("Category cannot be empty")
+            return None
+
+        return (description, cost, category)
+
+
+    def add(self):
+        print()
+        details = self.get_expense_details()
+        
+        if details is None:
+            return None
+        description, cost, category = details
 
         expense_id = self.expense_list.create_id()
 
@@ -127,7 +136,7 @@ class Ui:
             given_id = int(given_id)
         except ValueError:
             print("Error: please enter a valid ID")
-            return
+            return None
 
         if self.expense_list.delete_expense(given_id):
             print(f"Expense with ID {given_id} successfully deleted")
@@ -135,6 +144,7 @@ class Ui:
         else:
             print("No expense with that ID found")
             print()
+            return None
         
 
     def view(self):
