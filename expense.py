@@ -1,4 +1,5 @@
 from decimal import Decimal
+from datetime import date
 
 class Expense:
     def __init__(self, description:str, cost:Decimal, category:str, expense_id:int):
@@ -22,10 +23,8 @@ class Expense:
     def get_id(self):
         return self.expense_id
 
-
     def get_description(self):
         return self.description
-
 
     def get_category(self):
         return self.category

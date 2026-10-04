@@ -2,7 +2,9 @@ from expenseList import ExpenseList
 from expense import Expense
 from decimal import Decimal
 from ui import Ui
+from database import initialise_database
 
+initialise_database()
 expense_list = ExpenseList()
 ui = Ui(expense_list)
 ui.start()

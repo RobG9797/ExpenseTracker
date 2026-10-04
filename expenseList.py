@@ -2,6 +2,7 @@ from expense import Expense
 from decimal import Decimal
 from pathlib import Path
 import json
+import sqlite3
 
 class ExpenseList:
     def __init__(self):
@@ -25,8 +26,23 @@ class ExpenseList:
             return []
 
     def add_expense(self, expense:Expense):
-        self.expenses.append(expense)
-        self.save_expenses()
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
+        cost_pence = int(expense.get_cost() * 100)
+        
+        cursor.execute(
+            """
+            INSERT INTO expenses (description, cost_pence, category)
+            VALUES (?, ?, ?)
+            """,
+            (
+                expense.get_description(),
+                cost_pence,
+                expense.get_category()
+            )
+        )
+        connection.commit()
+        connection.close()
 
     def get_expense_by_id(self, expense_id):
         for expense in self.expenses:

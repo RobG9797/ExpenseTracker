@@ -93,8 +93,8 @@ class Ui:
             return None
 
         try:
-            cost = Decimal(splitResponse[1])
-        except InvalidOperation:
+            cost = int(splitResponse[1])
+        except ValueError, InvalidOperation:
             print("Please enter a valid cost")
             print()
             return None
