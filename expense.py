@@ -1,8 +1,10 @@
+from decimal import Decimal
+
 class Expense:
-    def __init__(self, description:str, cost:float, category:str ):
+    def __init__(self, description:str, cost:Decimal, category:str ):
         self.description = description
         self.cost = cost
-        self.category = category.lower()
+        self.category = category.lower().strip()
 
     def get_cost(self):
         return self.cost
