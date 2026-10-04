@@ -53,8 +53,17 @@ class ExpenseList:
                     lowest_id += 1
 
         return lowest_id
-                
 
+
+    def delete_expense(self, expense_id:int):
+        for expense in self.expenses:
+            if expense.get_id() == expense_id:
+                self.expenses.remove(expense)
+                self.save_expenses()
+                return True
+
+        return False
+                
 
     def total_by_category(self, category):
         category_total = Decimal("0.0")
