@@ -12,9 +12,15 @@
         "id": 2
     },
     {
-        "description": "see enemies",
-        "cost": "0.99",
+        "description": "sex",
+        "cost": "4.5",
+        "category": "pleasure",
+        "id": 4
+    },
+    {
+        "description": "see ruby",
+        "cost": "0",
         "category": "recreation",
-        "id": 3
+        "id": 5
     }
 ]

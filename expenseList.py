@@ -28,6 +28,12 @@ class ExpenseList:
         self.expenses.append(expense)
         self.save_expenses()
 
+    def get_expense_by_id(self, expense_id):
+        for expense in self.expenses:
+            if expense.get_id() == expense_id:
+                return expense
+        return False
+
     def save_expenses(self):
         data = []
         for expense in self.expenses:

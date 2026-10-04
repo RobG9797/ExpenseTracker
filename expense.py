@@ -7,10 +7,17 @@ class Expense:
         self.category = category.lower().strip()
         self.expense_id = expense_id
 
+    def set_description(self, description:str):
+        self.description = description
+
+    def set_cost(self, cost:Decimal):
+        self.cost = self.cost
+
+    def set_category(self, category:str):
+        self.category = category
 
     def get_cost(self):
         return self.cost
-
 
     def get_id(self):
         return self.expense_id

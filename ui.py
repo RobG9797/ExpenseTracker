@@ -52,12 +52,41 @@ class Ui:
             given_id = int(given_id)
         except ValueError:
             print("Error: please enter a valid ID")
+            print()
             return
 
-        if self.expense_list.delete_expense(given_id):
-            self.add()
-        else:
-            print("No expense with that ID found")
+        edited_expense = self.expense_list.get_expense_by_id(given_id)
+        if edited_expense == False:
+            print("Error: no expense found with that ID")
+            print()
+            return 
+
+        print("Please type the expense in the format 'description/cost/category")
+        response = input("Input: ")
+        splitResponse = response.split("/")
+
+        if len(splitResponse) != 3:
+            print("Error: please enter the expense in the format 'description/cost/category")
+            print() 
+            return
+        
+        description = splitResponse[0]
+
+        try:
+            cost = Decimal(splitResponse[1])
+        except InvalidOperation:
+            print("Please enter a valid cost")
+            print()
+            return
+        
+        category = splitResponse[2] 
+
+        edited_expense.set_description(description)
+        edited_expense.set_cost(cost)
+        edited_expense.set_category(category)
+
+        print("Expense edited")
+        print()
 
 
     def add(self):
