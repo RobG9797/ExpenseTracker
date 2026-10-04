@@ -8,12 +8,13 @@ class Ui:
 
     def menu(self):
         print("1. Add expense")
-        print("2. Delete expense")
-        print("3. View expenses")
-        print("4. View expenses by category")
-        print("5. View total spent")
-        print("6. Quit")
-        print("Please type a number 1 to 6 to continue")
+        print("2. Edit expense")
+        print("3. Delete expense")
+        print("4. View expenses")
+        print("5. View expenses by category")
+        print("6. View total spent")
+        print("7. Quit")
+        print("Please type a number 1 to 7 to continue")
 
     def start(self):
         while(True):
@@ -24,19 +25,39 @@ class Ui:
                 self.add()
 
             elif response == "2":
-                self.delete()
+                self.edit()
 
             elif response == "3":
-                self.view()
+                self.delete()
 
             elif response == "4":
-                self.show_by_category()
+                self.view()
 
             elif response == "5":
-                self.show_total()
+                self.show_by_category()
 
             elif response == "6":
+                self.show_total()
+
+            elif response == "7":
                 break
+
+
+    def edit(self):
+        print()
+        print("Please enter the ID of the expense to be edited")
+        given_id = input("Input: ")
+
+        try:
+            given_id = int(given_id)
+        except ValueError:
+            print("Error: please enter a valid ID")
+            return
+
+        if self.expense_list.delete_expense(given_id):
+            self.add()
+        else:
+            print("No expense with that ID found")
 
 
     def add(self):
@@ -81,8 +102,10 @@ class Ui:
 
         if self.expense_list.delete_expense(given_id):
             print(f"Expense with ID {given_id} successfully deleted")
+            print()
         else:
             print("No expense with that ID found")
+            print()
         
 
     def view(self):

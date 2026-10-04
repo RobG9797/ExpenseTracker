@@ -1,4 +1,1 @@
-Each expense unique ID
-delete expenses 
-edit expenses
-save and load from a JSON (convert decimals to strings before saving)
+change edit function so it doesnt delete first (is there another approach?)

@@ -6,15 +6,15 @@
         "id": 1
     },
     {
-        "description": "drink alchol",
-        "cost": "2.55",
+        "description": "drink water",
+        "cost": "2.99",
         "category": "recreation",
         "id": 2
     },
     {
-        "description": "see friends",
-        "cost": "2.20",
-        "category": "social",
+        "description": "see enemies",
+        "cost": "0.99",
+        "category": "recreation",
         "id": 3
     }
 ]

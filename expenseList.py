@@ -44,15 +44,11 @@ class ExpenseList:
 
 
     def create_id(self):
-        lowest_id = 1
+        if len(self.expenses) == 0:
+            return 1
 
-        with open("expenses.json", "r") as file:
-            data = json.load(file)
-            for expense in data:
-                if lowest_id == expense["id"]:
-                    lowest_id += 1
-
-        return lowest_id
+        highest_id = max(expense.get_id() for expense in self.expenses)
+        return highest_id + 1
 
 
     def delete_expense(self, expense_id:int):
