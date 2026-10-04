@@ -1,3 +1,4 @@
-make program robust to invalid input
-move output from expenseList to Ui (logic only)
-variable names should be expense_list not expenseList
+Each expense unique ID
+delete expenses 
+edit expenses
+save and load from a JSON (convert decimals to strings before saving)

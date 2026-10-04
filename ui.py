@@ -1,6 +1,6 @@
 from expenseList import ExpenseList
 from expense import Expense
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 class Ui:
     def __init__(self, expense_list: ExpenseList):
@@ -39,12 +39,29 @@ class Ui:
         print("Please type the expense in the format 'description/cost/category")
         response = input("Input: ")
         splitResponse = response.split("/")
+
+        if len(splitResponse) != 3:
+            print("Error: please enter the expense in the format 'description/cost/category")
+            print() 
+            return
+        
         description = splitResponse[0]
-        cost = Decimal(splitResponse[1])
+
+        try:
+            cost = Decimal(splitResponse[1])
+        except InvalidOperation:
+            print("Please enter a valid cost")
+            print()
+            return
+        
         category = splitResponse[2]
-        self.expense_list.add_expense(Expense(description, cost, category))
-        print("Expense added!")
+
+        expense_id = self.expense_list.create_id()
+
+        self.expense_list.add_expense(Expense(description, cost, category, expense_id))
+        print(f"Expense added with ID {expense_id}")
         print()
+
 
     def view(self):
         print()
@@ -53,10 +70,12 @@ class Ui:
             print(expense)
         print()
 
+
     def show_total(self):
         print()
         print(f"Total spent: £{self.expense_list.total_spent()}")
         print()
+
 
     def show_by_category(self):
         print()
