@@ -71,8 +71,6 @@ class Ui:
         edited_expense.set_cost(cost)
         edited_expense.set_category(category)
 
-        self.expense_list.save_expenses()
-
         print("Expense edited")
         print()
 
@@ -93,10 +91,9 @@ class Ui:
             return None
 
         try:
-            cost = int(splitResponse[1])
-        except ValueError, InvalidOperation:
+            cost = Decimal(splitResponse[1])
+        except InvalidOperation:
             print("Please enter a valid cost")
-            print()
             return None
 
         if cost < 0:
@@ -118,11 +115,9 @@ class Ui:
         
         if details is None:
             return None
-        description, cost, category = details
+        (description, cost, category) = details
 
-        expense_id = self.expense_list.create_id()
-
-        self.expense_list.add_expense(Expense(description, cost, category, expense_id))
+        expense_id = self.expense_list.add_expense(Expense(description, cost, category))
         print(f"Expense added with ID {expense_id}")
         print()
 
@@ -150,7 +145,7 @@ class Ui:
     def view(self):
         print()
         print("All expenses:")
-        for expense in self.expense_list.expenses:
+        for expense in self.expense_list.get_all_expenses():
             print(expense)
         print()
 

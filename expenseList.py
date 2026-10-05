@@ -1,35 +1,40 @@
 from expense import Expense
 from decimal import Decimal
-from pathlib import Path
-import json
 import sqlite3
 
 class ExpenseList:
-    def __init__(self):
-        self.expenses = self.load_expenses()
 
-    def load_expenses(self):
-        file_path = Path("expenses.json")
-
-        if file_path.exists():
-            with open(file_path, "r") as file:
-                data = json.load(file)
-                expenses = []
-                for expense_dict in data:
-                    description = expense_dict["description"]
-                    cost = Decimal(expense_dict["cost"])
-                    category = expense_dict["category"]
-                    expense_id = int(expense_dict["id"])
-                    expenses.append(Expense(description, cost, category, expense_id))
-                return expenses
-        else:
-            return []
-
-    def add_expense(self, expense:Expense):
+    def get_all_expenses(self):
         connection = sqlite3.connect("expenses.db")
         cursor = connection.cursor()
-        cost_pence = int(expense.get_cost() * 100)
-        
+
+        cursor.execute("""
+            SELECT description, cost_pence, category, id
+            FROM expenses
+        """) 
+
+        rows = cursor.fetchall() # rows is a list that holds each row as a tuple 
+        connection.close()
+
+        # For each tuple in the list, create a new Expense object and append to the expenses list
+        expenses = []
+        for expense in rows:  
+            expenses.append(  
+                Expense(
+                    expense[0], 
+                    Decimal(expense[1]) / 100, # converts cost from pence to decimal
+                    expense[2], 
+                    expense[3]
+                    )
+                )
+        return expenses
+    
+    # Inserts the selected Expense object into the expenses table
+    def add_expense(self, expense:Expense):         
+        connection = sqlite3.connect("expenses.db") 
+        cursor = connection.cursor()
+        cost_pence = int(expense.get_cost() * 100)  
+
         cursor.execute(
             """
             INSERT INTO expenses (description, cost_pence, category)
@@ -41,51 +46,49 @@ class ExpenseList:
                 expense.get_category()
             )
         )
+        expense_id = cursor.lastrowid
         connection.commit()
         connection.close()
+        return expense_id
 
     def get_expense_by_id(self, expense_id):
-        for expense in self.expenses:
-            if expense.get_id() == expense_id:
-                return expense
-        return None
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
 
-    def save_expenses(self):
-        data = []
-        for expense in self.expenses:
-            expense_as_dict = {
-                "description": expense.get_description(),
-                "cost": str(expense.get_cost()),
-                "category": expense.get_category(),
-                "id": expense.get_id()
-            }
-            data.append(expense_as_dict)
+        cursor.execute(
+            """
+            SELECT * FROM expenses
+            WHERE id = ?
+            """,
+            (expense_id,)
+        )
 
-        with open("expenses.json", "w") as file:
-            json.dump(data, file, indent=4)
+        selected = cursor.fetchone()
+        connection.close()
 
-
-    def create_id(self):
-        if len(self.expenses) == 0:
-            return 1
-
-        highest_id = max(expense.get_id() for expense in self.expenses)
-        return highest_id + 1
-
+        return Expense(selected[0], selected[1], selected[2], selected[3])
 
     def delete_expense(self, expense_id:int):
-        for expense in self.expenses:
-            if expense.get_id() == expense_id:
-                self.expenses.remove(expense)
-                self.save_expenses()
-                return True
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
 
-        return False
-                
-
+        cursor.execute(
+            """
+            DELETE FROM expenses
+            WHERE id = ?
+            """, 
+            (expense_id,)
+        )
+        
+        # returns True if a row was deleted
+        deleted = cursor.rowcount > 0  
+        connection.commit()
+        connection.close()
+        return deleted
+ 
     def total_by_category(self, category):
         category_total = Decimal("0.0")
-        for expense in self.expenses:
+        for expense in self.get_all_expenses():
             if expense.get_category() == category.lower().strip():
                 category_total += expense.get_cost()
         return category_total
@@ -93,13 +96,13 @@ class ExpenseList:
     def expenses_by_category(self, category):
         category = category.lower().strip()
         returned_expenses = []
-        for expense in self.expenses:
+        for expense in self.get_all_expenses():
             if expense.get_category() == category:
                 returned_expenses.append(expense)
         return returned_expenses
 
     def total_spent(self):
         total = Decimal("0.0")
-        for expense in self.expenses:
+        for expense in self.get_all_expenses():
             total += expense.get_cost()
         return total

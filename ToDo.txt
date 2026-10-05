@@ -1,3 +1,2 @@
-Add dates
-SQLite
+make sql single source of truth
 Flask

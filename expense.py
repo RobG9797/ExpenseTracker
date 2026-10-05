@@ -1,8 +1,7 @@
 from decimal import Decimal
-from datetime import date
 
 class Expense:
-    def __init__(self, description:str, cost:Decimal, category:str, expense_id:int):
+    def __init__(self, description:str, cost:Decimal, category:str, expense_id=None):
         self.description = description
         self.cost = cost
         self.category = category.lower().strip()
