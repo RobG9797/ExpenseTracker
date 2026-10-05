@@ -55,9 +55,9 @@ class Ui:
             print()
             return
 
-        edited_expense = self.expense_list.get_expense_by_id(given_id)
-        if edited_expense is None:
-            print("Error: no expense found with that ID")
+        expense = self.expense_list.get_expense_by_id(given_id)
+        if expense is None:
+            print("Error: no expense with that ID")
             print()
             return 
 
@@ -65,11 +65,8 @@ class Ui:
 
         if details is None:
             return
-        description, cost, category = details
-
-        edited_expense.set_description(description)
-        edited_expense.set_cost(cost)
-        edited_expense.set_category(category)
+        
+        self.expense_list.edit_expense(given_id, details[0], details[1], details[2])
 
         print("Expense edited")
         print()
@@ -141,7 +138,6 @@ class Ui:
             print()
             return None
         
-
     def view(self):
         print()
         print("All expenses:")
@@ -149,21 +145,26 @@ class Ui:
             print(expense)
         print()
 
-
     def show_total(self):
         print()
         print(f"Total spent: £{self.expense_list.total_spent()}")
         print()
 
-
     def show_by_category(self):
         print()
         category = input("Please enter the name of the category: ").strip().lower()
         print()
+        returned_values = self.expense_list.select_by_category(category)
+        if not returned_values:
+            print("No expenses in this category ")
+            print()
+            return
+        
         print(f"Expenses in {category} category")
-        for expense in self.expense_list.expenses_by_category(category):
+        for expense in returned_values:
             print(expense)
+
         print()
-        print(f"Total spent in {category} category: £{self.expense_list.total_by_category(category)}")
+        print(f"Total spent in {category} category: £{self.expense_list.sum_by_category(category)}")
         print()
 

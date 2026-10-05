@@ -51,6 +51,60 @@ class ExpenseList:
         connection.close()
         return expense_id
 
+    def select_by_category(self, category):
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            SELECT * FROM expenses
+            WHERE category = ?
+            """, (category,)
+        )
+        result = cursor.fetchall()
+        connection.close()
+        expenses = []
+        for expense in result:
+            expenses.append(Expense(expense[1], Decimal(expense[2]) / 100, expense[3], expense[0]))
+        return expenses
+
+    def sum_by_category(self, category):
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            SELECT SUM(cost_pence) 
+            FROM expenses
+            WHERE category = ?
+            """, (category,)
+        )
+        result = cursor.fetchone()
+        connection.close()
+        return Decimal(result[0]) / 100 if result[0] is not None else Decimal("0.0")
+        
+
+    def edit_expense(self, expense_id, description, cost, category):
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
+
+        cost_pence = int(cost * 100)
+
+        cursor.execute(
+            """
+            UPDATE expenses
+            SET description = ? , cost_pence = ?, category = ?
+            WHERE id = ?
+            """, 
+            (description, cost_pence, category, expense_id)
+        )
+        found = cursor.rowcount > 0
+
+        connection.commit()
+        connection.close()
+
+        return found
+    
     def get_expense_by_id(self, expense_id):
         connection = sqlite3.connect("expenses.db")
         cursor = connection.cursor()
@@ -66,7 +120,11 @@ class ExpenseList:
         selected = cursor.fetchone()
         connection.close()
 
-        return Expense(selected[0], selected[1], selected[2], selected[3])
+        if selected is None:
+            return None
+
+        return Expense(selected[1], (Decimal(selected[2])) / 100, selected[3], selected[0])
+
 
     def delete_expense(self, expense_id:int):
         connection = sqlite3.connect("expenses.db")
@@ -85,21 +143,6 @@ class ExpenseList:
         connection.commit()
         connection.close()
         return deleted
- 
-    def total_by_category(self, category):
-        category_total = Decimal("0.0")
-        for expense in self.get_all_expenses():
-            if expense.get_category() == category.lower().strip():
-                category_total += expense.get_cost()
-        return category_total
-
-    def expenses_by_category(self, category):
-        category = category.lower().strip()
-        returned_expenses = []
-        for expense in self.get_all_expenses():
-            if expense.get_category() == category:
-                returned_expenses.append(expense)
-        return returned_expenses
 
     def total_spent(self):
         total = Decimal("0.0")
